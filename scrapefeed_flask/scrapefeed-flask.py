@@ -25,6 +25,7 @@ def main():
 def my_form_post():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
     text = request.form['text']
+    print "---> URL entered: " + text                 # logging URLs in shell for debugging
     random.seed(text)
     try:
         page=fix_encoding(urllib2.urlopen(text).read().decode('utf-8'))
@@ -119,5 +120,5 @@ def feed(feed):
 if __name__ == '__main__':
     try:
         app.run()
-    except: pass
-
+    except Exception as detail:
+            print "* Error: "+str(detail)
