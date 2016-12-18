@@ -12,16 +12,16 @@ TEMPLATE_DIR = '/home/scrapefeed_flask/templates/'
 TEMPLATE_FILE = 'form.html'
 TEMPLATE_OUT = 'out.html'
 
-app = Flask(__name__)
+application = Flask(__name__)
  
-@app.route("/")
+@application.route("/")
 def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
     html = env.get_template(TEMPLATE_FILE).render()
     return html
 
 
-@app.route('/', methods=['POST'])
+@application.route('/', methods=['POST'])
 def my_form_post():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
     text = request.form['text']
@@ -109,7 +109,7 @@ def my_form_post():
     
 
 
-@app.route('/feed/<string:feed>')
+@application.route('/feed/<string:feed>')
 def feed(feed):
     with open('/var/www/html/feed/'+feed) as fi:
 	return fi.read()
@@ -119,6 +119,6 @@ def feed(feed):
 
 if __name__ == '__main__':
     try:
-        app.run()
+        application.run(host='0.0.0.0')
     except Exception as detail:
             print "* Error: "+str(detail)
