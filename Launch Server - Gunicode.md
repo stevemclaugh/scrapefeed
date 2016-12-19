@@ -15,8 +15,7 @@ cd ~/scrapefeed
 virtualenv scrapefeedenv
 source scrapefeedenv/bin/activate
 
-pip install --user -U bs4 ftfy
-sudo pip install --user -U lxml
+sudo pip install -U bs4 ftfy unidecode lxml
 ```
 
 ### Starting Server

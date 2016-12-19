@@ -7,14 +7,15 @@ from bs4 import BeautifulSoup
 import urllib2
 from datetime import datetime, timedelta
 from ftfy import fix_encoding
+from unidecode import unidecode
 
-TEMPLATE_DIR = '/home/scrapefeed_flask/templates/'
+TEMPLATE_DIR = '/home/smcl/scrapefeed/templates/' ## Swap in your username.
 TEMPLATE_FILE = 'form.html'
 TEMPLATE_OUT = 'out.html'
 
 application = Flask(__name__)
  
-@application.route("/")
+@application.route('/')
 def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
     html = env.get_template(TEMPLATE_FILE).render()
@@ -33,11 +34,14 @@ def my_form_post():
         try:
             page=fix_encoding(urllib2.urlopen(text).read().encode('utf-8'))
         except:
-            page=urllib2.urlopen(text).read()
+            try:
+                page=unidecode(unicode(urllib2.urlopen(text).read()))
+            except:
+                page=urllib2.urlopen(text).read()
     soup=BeautifulSoup(page,'lxml')
     links=[]
     title=soup.title.string
-    url_dir="http://scrapefeed.net/feed/"
+    url_dir='http://scrapefeed.net/feed/'
     for link in soup.findAll('a'):
         temp_link=unicode(link.get('href')).strip()
         if temp_link.lower()[-4:]=='.mp3':
@@ -111,8 +115,7 @@ def my_form_post():
 
 @application.route('/feed/<string:feed>')
 def feed(feed):
-    with open('/var/www/html/feed/'+feed) as fi:
-	return fi.read()
+    with open('/var/www/html/feed/'+feed) as fi: return fi.read()
 
 
 
