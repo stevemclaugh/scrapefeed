@@ -25,27 +25,32 @@ def main():
 @application.route('/', methods=['POST'])
 def my_form_post():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
-    text = request.form['text']
-    print "---> URL entered: " + text                 # logging URLs in shell for debugging
+    text = request.form['text'].strip()
+    print "---> URL entered: |" + text +'|'              # logging URLs in shell for debugging
     random.seed(text)
-    try:
-        page=fix_encoding(urllib2.urlopen(text).read().decode('utf-8'))
-    except:
+    url_dir='http://scrapefeed.net/feed/'
+    if '.mp3' in text.lower():
+        links=[text]
+        title=text.split('/')[-1][:-4]
+    else:
         try:
-            page=fix_encoding(urllib2.urlopen(text).read().encode('utf-8'))
+            page=fix_encoding(urllib2.urlopen(text).read().decode('utf-8'))
         except:
             try:
-                page=unidecode(unicode(urllib2.urlopen(text).read()))
+                page=fix_encoding(urllib2.urlopen(text).read().encode('utf-8'))
             except:
-                page=urllib2.urlopen(text).read()
-    soup=BeautifulSoup(page,'lxml')
-    links=[]
-    title=soup.title.string
-    url_dir='http://scrapefeed.net/feed/'
-    for link in soup.findAll('a'):
-        temp_link=unicode(link.get('href')).strip()
-        if temp_link.lower()[-4:]=='.mp3':
-            links.append(temp_link)
+                try:
+                    page=unidecode(unicode(urllib2.urlopen(text).read()))
+                except:
+                    page=urllib2.urlopen(text).read()
+        soup=BeautifulSoup(page,'lxml')
+        links=[]
+        try: title=soup.title.string
+        except: title=text.split('/')[-1].split('.')[0]    
+        for link in soup.findAll('a'):
+            temp_link=unicode(link.get('href')).strip()
+            if temp_link.lower()[-4:]=='.mp3':
+                links.append(temp_link)
     rsspart1='''<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
   <channel>
@@ -75,7 +80,7 @@ def my_form_post():
 <guid>%(mp3link)s</guid>
 <description></description>
 <enclosure url="%(mp3link)s" length="" type="audio/mpeg"/>
-<category>tt_podcasts</category>
+<category>podcasts</category>
 <pubDate>%(pub_date)s</pubDate>
 <itunes:author></itunes:author>
 <itunes:explicit>No</itunes:explicit>
