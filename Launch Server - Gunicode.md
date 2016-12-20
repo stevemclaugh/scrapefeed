@@ -1,4 +1,4 @@
-# Gunicorn server with Flask
+# Gunicorn Server with Flask
 
 ## Setup
 
