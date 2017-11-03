@@ -120,15 +120,11 @@ def my_form_post():
     
     html = env.get_template(TEMPLATE_OUT).render(url_out=url_out,title=title)
     return html
-    
-    
 
 
 @application.route('/feed/<string:feed>')
 def feed(feed):
     with open('/var/www/html/feed/'+feed) as fi: return fi.read()
-
-
 
 
 if __name__ == '__main__':
