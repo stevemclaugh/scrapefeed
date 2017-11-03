@@ -29,6 +29,10 @@ def my_form_post():
     print "---> URL entered: |" + text +'|'              # logging URLs in shell for debugging
     random.seed(text)
     url_dir='http://scrapefeed.net/feed/'
+    if text[-1]=='/':
+        base_dir_path = text
+    else:
+        base_dir_path = '/'.join(text.split('/')[:-1])+'/'
     if '.mp3' in text.lower():
         links=[text]
         title=text.split('/')[-1][:-4]
@@ -49,6 +53,8 @@ def my_form_post():
         except: title=text.split('/')[-1].split('.')[0]    
         for link in soup.findAll('a'):
             temp_link=unicode(link.get('href')).strip()
+            if 'http:' not in temp_link:
+                temp_link = base_dir_path + temp_link
             if temp_link.lower()[-4:]=='.mp3':
                 links.append(temp_link)
     rsspart1='''<?xml version="1.0" encoding="UTF-8"?>
